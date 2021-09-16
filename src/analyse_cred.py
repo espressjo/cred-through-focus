@@ -1,17 +1,29 @@
 import numpy as np
 from astropy.io import fits
 import matplotlib.pyplot as plt
-import glob
 from scipy.ndimage import median_filter
-import os
 from astropy.table import Table
-import datetime
-import subprocess
 from os.path import basename,join,isdir
 from os import listdir,mkdir
 from scipy.optimize import curve_fit
 from matplotlib.backends.backend_pdf import PdfPages
 
+'''
+Created on Wed Jul 21 12:23:10 2021
+
+Optional arguments are; 
+    --list    Will list all the image folders in working directory defined in cfg file.
+    --dir     run the analysis in specific directory located in working dir. (e.g., --dir=20210921105411 )
+    --path    run the analysis in specific directory (e.g., --path=C:\\Users\\Hexagon\\20210921105411 )
+    
+@author: Jonathan St-Antoine, jonathan@astro.umontreal.ca
+'''
+def help():
+    print('\t::: analyse_cred.py :::')
+    print('')
+    print('\t--list\tWill list all the image folders in working directory defined in cfg file.')
+    print('\t--dir\trun the analysis in specific directory located in working dir. (e.g., --dir=20210921105411 )')
+    print('\t--path\trun the analysis in specific directory (e.g., --path=C:\\Users\\Hexagon\\20210921105411 )')
 class analyse():
     def __init__(self,wdir):
         self.wdir = wdir
@@ -194,9 +206,33 @@ class analyse():
                 pdf.savefig(fig)
         
                 plt.show()
-
+    def ls(self):
+        from os import listdir
+        ls = [d for d in listdir(self.wdir) if d.isnumeric()]
+        from natsort import natsorted
+        ls = natsorted(ls)
+        return ls
 if '__main__' in __name__:
-    wdir = '/home/noboru/tmpcred/20210722155404326'
+    from sys import argv
+    from config_file_cred import cfg_file
+    if '--help' in argv:
+        help()
+        exit(0)
+    cfg = cfg_file()
+    if '--list' in argv:
+        wdir = cfg['WDIR']
+        an = analyse(wdir)
+        ls = an.ls()
+        for d in ls:
+            print(d)
+        exit(0)
+    for arg in argv:
+        if '--path' in arg:
+            wdir = arg.replace('--path=','')
+        if '--dir' in arg:
+            wdir = join(cfg['WDIR'],arg.replace('--dir=',''))
+
+    #wdir = '/home/noboru/tmpcred/20210722155404326'
     an = analyse(wdir)
     an.clean()
     an.redux()

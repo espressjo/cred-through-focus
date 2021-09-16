@@ -11,7 +11,7 @@ req_version = {
     'natsort': '7.1.1',
     'astropy':'4.2',
     'numpy':'1.20.1',
-    'pycromanager':'0.13.2',
+    'pycromanager':'0.13.1',
     'matplotlib':'3.3.4',
     're':'2.2.1',
     'scipy':'1.6.1',
@@ -22,25 +22,61 @@ def colored(txt,c='green'):
         return '\x1b[0;30;41m%s\x1b[0m'%txt
     else:
         return '\x1b[0;30;42m%s\x1b[0m'%txt
-import natsort
-import astropy
-import pycromanager
-import numpy
-import matplotlib
-import re
-import scipy
-import tqdm
-# print(natsort.__version__)
-# print(astropy.__version__)
-# print(numpy.__version__)
-# print(pycromanager.__version__)
-# print(matplotlib.__version__)
-
-module = {'tqdm':tqdm,'scipy':scipy,'natsort':natsort,'astropy':astropy,'numpy':numpy,'pycromanager':pycromanager,'matplotlib':matplotlib,'re':re}
-
 
 print("\t\t :::: Checking version :::\n")
-for h in module:
+module = {}
+try:
+    import natsort
+    module['natsort'] = natsort
+except:
+    del req_version['natsort']
+    print("%s:\tNot installed\t[%s]"%('natsort',colored('NOK',c='red')))
+try:
+    import astropy
+    module['astropy'] = astropy
+except:
+    del req_version['astropy']
+    print("%s:\tNot installed\t[%s]"%('astropy',colored('NOK',c='red')))
+try:
+    import pycromanager
+    module['pycromanager'] = pycromanager
+except:
+    del req_version['pycromanager']
+    print("%s:\tNot installed\t[%s]"%('pycromanager',colored('NOK',c='red')))
+try:
+    import numpy
+    module['numpy'] = numpy
+except:
+    del req_version['numpy']
+    print("%s:\tNot installed\t[%s]"%('numpy',colored('NOK',c='red')))
+try:
+    import matplotlib
+    module['matplotlib'] = matplotlib
+except:
+    del req_version['matplotlib']
+    print("%s:\tNot installed\t[%s]"%('matplotlib',colored('NOK',c='red')))
+try:
+    import re
+    module['re'] = re
+except:
+    del req_version['re']
+    print("%s:\tNot installed\t[%s]"%('re',colored('NOK',c='red')))
+try:
+    import scipy
+    module['scipy'] = scipy
+except:
+    del req_version['scipy']
+    print("%s:\tNot installed\t[%s]"%('scipy',colored('NOK',c='red')))
+try:
+    import tqdm
+    module['tqdm'] = tqdm
+except:
+    del req_version['tqdm']
+    print("%s:\tNot installed\t[%s]"%('tqdm',colored('NOK',c='red')))
+
+
+for h in req_version:
+
     if version.parse(module[h].__version__) >= version.parse(req_version[h]):
         print("%s:\t%s\t[%s]"%(h,module[h].__version__,colored('OK')))
     else:

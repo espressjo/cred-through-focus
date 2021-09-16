@@ -18,7 +18,7 @@ from os.path import join
 import numpy as np
 from astropy.time import Time
 
-from sonfig_file_cred import cfg_file
+from config_file_cred import cfg_file
 
 fmt = "%Y-%m-%dT%H:%M:%S"
 xlim = 1#for animation
@@ -168,16 +168,27 @@ class CRED():
             self.core.set_exposure(int(t))
         t= self.core.get_exposure()
         print("Exposure time is set to %fms"%t)
+    def __enter__(self):
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.disconnect()
+        print("Camera closed!")
 if '__main__' in __name__:
     from sys import argv
+    if '--help' in argv:
+        print('\t::: cred.py :::')
+        print('')
+        print('\t--help\thelp menu')
+        print('\t--show-img\tTake an image and display in DS9. All parameters can be adjust with imageJ')
+        exit(0)
     if '--show-img' in argv:
-        
-        cred = CRED()
-        print(cred.get_temp())
-        for arg in argv:
-            if '--exp' in arg:
-                exp = float(arg.replace('--exp=','').strip())
-                cred.set_exp_time(exp)
-        cred.show_tmp_image()
-        cred.disconnect()
+
+        with CRED() as cred:
+            print(cred.get_temp())
+            for arg in argv:
+                if '--exp' in arg:
+                    exp = float(arg.replace('--exp=','').strip())
+                    cred.set_exp_time(exp)
+            cred.show_tmp_image()
+            
 
