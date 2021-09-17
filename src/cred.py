@@ -38,7 +38,7 @@ class CRED():
         self.wavelength = 0
         self.comments = [];
     def set_comments(self,comments):
-        self.comments = comments
+        self.comments.append(comments)
     def set_wavelenght(self,w):
         self.wavelength = w
     def set_puissance(self,p):

@@ -37,7 +37,7 @@ def create_log(p):
                 line+="yes,"
             else:
                 line+="no,"
-            line+="no"
+            line+="no,"
             line+="%.1f,"%H['FPS']
             line+="%.3f,"%H['EXPTIME']
             line+="%s,"%H['GAIN']
@@ -45,6 +45,11 @@ def create_log(p):
             line+="%.1f,"%H['WAVEL']
             line+="%.3f,"%H['SOURCEP']
             line+="%s,"%H['ORELAY']
+            if 'COMMENT' in H:
+                cmt = ";".join(H['COMMENT'])
+                line+="%s, "%cmt
+            else:
+                line+=" ,"
             line+="\n"
             fi.write(line)
     print("log.csv saved here: %s"%p)

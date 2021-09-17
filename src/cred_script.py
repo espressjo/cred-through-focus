@@ -53,12 +53,12 @@ number_image = int(cfg['IMGNUM'])
 target_temperature = float(cfg['DETTEMP'])
 timeout_trigger = int(cfg['TIMEOUT']) #timeout before capture
 nd_filter = float(cfg['NDF'])#ND filter value
-comments = cfg['COMMENTS']
+
 
 exp_time = 35#Starting exposure time in ms. The exposure time will be asked eveytime time
 
 #:::::::::::::::::::::::::::::::::::::::::
-
+img2csv_path = ''
 with CRED() as cred:
     #set some variables
     operator = input("Name of the person using this script?\n\t")
@@ -80,6 +80,7 @@ with CRED() as cred:
     programme = input("Name of the program?\n\t")
     
     cred.WDIR = join(cred.WDIR,datetime.now().strftime("%Y%m%d%H%M%S%f")[:-3])
+    img2csv_path = cred.WDIR
     if not isdir(cred.WDIR):
         mkdir(cred.WDIR)
     #Initial setup
@@ -99,18 +100,25 @@ with CRED() as cred:
     cred.set_wavelenght(wavelength)
     cred.set_programme_name(programme)
     cred.set_puissance(puissance)#power of the source in mW
-    cred.set_nd(nd_filter)#ND filter value
-    
+    cred.set_nd_filter(nd_filter)#ND filter value
+    for cmt in cfg['COMMENTS']:
+        cred.set_comments(cmt)
     ii=0
+    analyse = True
+    print("From this point you can type in a command;\n\tanalyse\tWill start the analysis\n\tabort\tWill close this script without analysing the data\n\tcomment\tWill let a user enter a comment in the FITS header.")
     while(1):
         print("Position number #%d"%(ii+1))
         ii+=1
         tmp_cmt = ""
-        usr = input("Move the focuser to a position. Press any key to continue. -1 to quit, -2 to add a comment ")
-        if '-1' in usr:
+        usr = input("Move the focuser to a position. Press any key to continue. or [analyse,abort,comment]")
+        if 'analyse' in usr:
+            analyse = True
             break
-        if '-2' in usr:
+        if 'comment' in usr:
             tmp_cmt = input('Enter your comment: ')
+        if 'abort' in usr:
+            analyse = False
+            break
         pos = float(input("Position in (um)? "))
         cred.set_focus(pos)
         exp = float(input("Exposure time (ms)? "))
@@ -131,9 +139,12 @@ with CRED() as cred:
     
 
     
-
-from analyse_cred import analyse
-
-an = analyse(cred.WDIR)
-an.clean()
-an.redux()
+if analyse:
+    from analyse_cred import analyse
+    
+    an = analyse(img2csv_path)
+    an.clean()
+    an.redux()
+    if img2csv_path!='':
+        from img2csv import create_log
+        create_log(img2csv_path)
