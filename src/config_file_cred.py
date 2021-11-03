@@ -7,6 +7,7 @@ Created on Wed Sep 15 09:21:43 2021
 """
 from os import getcwd
 from os.path import join,isfile
+from pathlib import Path
 import re
 
 class cfg_file():
@@ -49,7 +50,8 @@ class cfg_file():
         self.cfg['TIMEOUT'] = '5'
         self.cfg['NDF'] = '0'
         self.cfg['COMMENTS'] = [];
-        self.cfg['WDIR'] = "C:/Users/Hexagon/Desktop/"
+        
+        self.cfg['WDIR'] = join(Path.home(),'Desktop')
     def extract_info(self,f):
         for line in f.readlines():
             

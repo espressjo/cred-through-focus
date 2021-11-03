@@ -112,8 +112,9 @@ class CRED():
         return float(self.core.get_property_from_cache('FliSdk','Sensor Temp'))
     def show_tmp_image(self):
         from os import system
-        self.acquire_single_image('C:/Users/Hexagon/Desktop/tmp.fits',overwrite=True)
-        system("C:\SAOImageDS9\ds9.exe -zscale C:/Users/Hexagon/Desktop/tmp.fits")
+        
+        self.acquire_single_image(join(self.WDIR,'tmp.fits'),overwrite=True)
+        system("C:\SAOImageDS9\ds9.exe -zscale %s"%join(self.WDIR,'tmp.fits'))
     def acquire_single_image(self,fname,overwrite=False,user_cmt=""):
         self.core.snap_image()
         if '/' not in fname:
