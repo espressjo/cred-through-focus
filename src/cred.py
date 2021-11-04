@@ -75,9 +75,11 @@ class CRED():
     def set_sensor_temperature(self,t):
         #set pelletier target in deg. C
         self.core.set_property('FliSdk','Set sensor temp',t)
+    '''
     def set_sensor_temperature(self,t):
         #set pelletier target in deg. C
         self.core.set_property('FliSdk','Set sensor temp',t)
+        
         from matplotlib import pyplot as plt
         import matplotlib.animation as ani
         import seaborn as sns
@@ -107,9 +109,11 @@ class CRED():
         animator = ani.FuncAnimation(fig, chartfunc, interval = 1000)
         
         plt.show()
+        '''
     def get_temp(self):
         #return ccd temp (deg. C)
-        return float(self.core.get_property_from_cache('FliSdk','Sensor Temp'))
+        #return float(self.core.get_property_from_cache('FliSdk','Sensor Temp'))
+        return 0
     def show_tmp_image(self):
         from os import system
         
