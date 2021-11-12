@@ -7,13 +7,17 @@ Created on Fri Nov  5 11:49:45 2021
 """
 #TODO implement Gain function
 #TODO in version.py, make sure we have seaborn as well for live graph
-import FliSdk_V2 as FliSdk
 from time import sleep
 from os.path import join
 from astropy.io import fits
 from os import system
 from datetime import datetime
 from astropy.time import Time
+
+#required for the SDK
+import sys
+sys.path.append('../')
+from CRED.sdk.lib import FliSdk_V2 as FliSdk
 
 xlim = 1#for animation
 xlim_step = 1#for animation
@@ -107,19 +111,32 @@ class cred2():
         temps['heatsink'] = _temps[6]
         return temps
     def get_status(self):
+        '''
+        Read a bunch of info.
+
+        Returns
+        -------
+        status : TYPE
+            DESCRIPTION.
+        definition : TYPE
+            DESCRIPTION.
+
+        '''
         status = {}
-        definition = {'EXPTIME':'Exposure time (ms)','BIAS': 'Bias status 1->done, 0-> not done',
-                      'FOCUS':'focus position in um (manually set)','DATE': 'date of creation','CAMERA': 'camera modele',
+        definition = {'EXPTIME':'Exposure time (ms)',
+                      'BIAS': 'Bias status 1->done, 0-> not done',
+                      'FOCUS':'focus position in um (manually set)',
+                      'DATE': 'date of creation',
+                      'CAMERA': 'camera modele',
                       'FPS':'Frame per second', 
                       'CCDTSP': 'Set point of the FPA',
                       'MJDATE':'MJD','WAVEL':'Approx. wavelength in nanometer',
                       'CCDT':'temperature of the sensor',
-                      'peltier': 'temperature at the Peltier stage',
-                      'hsink': 'temperature at the heatsink'}
+                      'PELTIER': 'temperature at the Peltier stage',
+                      'HSINK': 'temperature at the heatsink'}
         status['EXPTIME'] = self.get_exp_time()
         status['BIAS'] = self.get_bias_status()
         status['FOCUS'] = self.focus
-        status['WAVEL'] = self.wavelength
         status['DATE'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] #datetime.now().strftime(fmt)
         status['CAMERA'] = self.cameraModel
         status['FPS'] = self.get_fps()
@@ -128,9 +145,9 @@ class cred2():
         status['MJDATE'] = Time.now().mjd
         temps = self.read_temp()
         status['CCDT'] = temps['sensor']
-        status['peltier'] = temps['peltier']
-        status['hsink'] = temps['heatsink']
-    
+        status['PELTIER'] = temps['peltier']
+        status['HSINK'] = temps['heatsink']
+
         return status,definition
 
     def shutdown(self):
@@ -148,12 +165,43 @@ class cred2():
         exit(0)
         return
     def get_ccd_set_point(self):
+        '''
+        Return ccd set point.
+
+        Returns
+        -------
+        sp : TYPE
+            DESCRIPTION.
+
+        '''
         _,sp = FliSdk.FliCredTwo.GetTempSnakeSetPoint(self.context)
         return sp
     def set_sensor_temperature(self,sp):
+        '''
+        Set peltier system setpoint
+
+        Parameters
+        ----------
+        sp : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        '''
         FliSdk.FliCredTwo.SetTempSnakeSetPoint(self.context, sp)
         return
     def detectCameras(self):
+        '''
+        Connect to the camera. If self.shutdown was used, you need 
+        to do a power cycle before this function is called.
+
+        Returns
+        -------
+        None.
+
+        '''
         FliSdk.DetectGrabbers(self.context)
         listOfCameras = FliSdk.DetectCameras(self.context)
         
@@ -171,36 +219,113 @@ class cred2():
         #    self.ReadParameters()
         #    self.timer.start(10)
     def disconnect(self):
+        '''
+        Stop communicating with the cred.
+
+        Returns
+        -------
+        None.
+
+        '''
         FliSdk.Stop(self.context)
         FliSdk.Exit(self.context) 
     def set_exp_time(self,time_ms):
+        '''
+        Set exposure time in ms. This drive the FPS number.
+
+        Parameters
+        ----------
+        time_ms : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        '''
         sec = time_ms/1000.
         fps = 1/sec
         FliSdk.FliSerialCamera.SetFps(self.context,fps)
         FliSdk.FliCredTwo.SetTint(self.context, sec)
         return 
     def get_exp_time(self):
-        #return exposure time in ms
+        '''
+        Return the exposure tim ein ms
+
+        Returns
+        -------
+        FOAT
+            exposure time in ms.
+
+        '''
         res, tint = FliSdk.FliCredTwo.GetTint(self.context)
         return tint*1000.0
     def get_fps(self):
-        #return exposure time in ms
+        '''
+        Will return the FPS. Exposure time drives the FPS
+
+        Returns
+        -------
+        fps : FLOAT
+            frame per second
+
+        '''
         _,fps = FliSdk.FliSerialCamera.GetFps(self.context)
         return fps
     def bias(self):
+        '''
+        This will acquire images to create a bias. By default, 
+        the bias is applied. Use self.disable_bias to NOT use 
+        the bias.
+
+        Returns
+        -------
+        None.
+
+        '''
         if (not FliSdk.FliCred.BuildBias(self.context)):
             print("Failed to acquire bias.")
         FliSdk.FliSerialCamera.EnableBias(self.context, True)
         return 
     def disable_bias(self):
+        '''
+        Will disable the last acquired bias.
+
+        Returns
+        -------
+        None.
+
+        '''
         FliSdk.FliSerialCamera.EnableBias(self.context, False)
         return
     def get_bias_status(self):
+        '''
+        return the status of the bias. T if it is used,
+        false if it is not used.
+
+        Returns
+        -------
+        state : BOOL
+            DESCRIPTION.
+
+        '''
         _,state = FliSdk.FliCred.GetBiasState(self.context)
         return state
     def show_tmp_image(self):
+        '''
+        this will acquire a temporary image an display it in ds9. 
+        Provided ds9 is install in standard location i.e.,C:\SAOImageDS9\  
+
+        Returns
+        -------
+        None.
+
+        '''
         data = self.single_capture()
+        status,defi = self.get_status()
         hdu = fits.PrimaryHDU(data=data)
+        for i,j,k in zip(status.keys(),status.values(),defi.values()):
+            hdu[0].header[i] = (j,k)        
         hdu.writeto(join(self.WDIR,'tmp.fits'),overwrite=True)
         system("C:\SAOImageDS9\ds9.exe -zscale %s"%join(self.WDIR,'tmp.fits'))
     def single_capture(self):
@@ -247,6 +372,7 @@ class cred2():
         hdu.header['GAIN'] = ('low','Gain setting')
         if self.programme_name!="":
             hdu.header['PROGRAM'] = (self.programme_name,'programe name')
+        hdu.header['WAVEL'] = (self.wavelength,'Source wavelength')
         if self.operator!="":
             hdu.header['OPE'] = (self.operator,'Operator')
         if self.puissance!=0:

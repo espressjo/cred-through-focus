@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="FliSdkDemo">
+        <file>image/icon.png</file>
+        <file>image/logo.png</file>
+    </qresource>
+</RCC>

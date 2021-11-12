@@ -13,7 +13,7 @@ def help():
     print('\t--no-bias      Will not bias the images')
     print('\t--no-ccdt      Will not show the real-time temperature of the CCD')
     print('\t--test         Will test connection to the CRED.')
-from cred import CRED
+from cred2 import cred2
 from os.path import join,isdir
 from datetime import datetime
 from os import mkdir
@@ -59,7 +59,7 @@ exp_time = 35#Starting exposure time in ms. The exposure time will be asked evey
 
 #:::::::::::::::::::::::::::::::::::::::::
 img2csv_path = ''
-with CRED() as cred:
+with cred2() as cred:
     #set some variables
     operator = input("Name of the person using this script?\n\t")
     for i in range(3):
