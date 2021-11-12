@@ -14,7 +14,7 @@ class cfg_file():
     def __init__(self):
         root_path = getcwd()
         self.cfg = {}
-        self.dict = ['IMGNUM','DETTEMP','TIMEOUT','NDF']
+        self.dict = ['IMGNUM','DETTEMP','TIMEOUT','NDF','GAIN']
         if 'src' in root_path:
             root_path = root_path.replace('src','')
         self.set_default()

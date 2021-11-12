@@ -16,8 +16,8 @@ from astropy.time import Time
 
 #required for the SDK
 import sys
-sys.path.append('../')
-from CRED.sdk.lib import FliSdk_V2 as FliSdk
+sys.path.append('../sdk/lib')
+import FliSdk_V2 as FliSdk
 
 xlim = 1#for animation
 xlim_step = 1#for animation
@@ -54,6 +54,15 @@ class cred2():
         self.operator = name
     def set_focus(self,pos):
         self.focus = pos
+    def get_gain(self):
+        res,conversionGain = FliSdk.FliCredTwo.GetConversionGain(self.context)
+        return conversionGain
+    def set_gain(self,gain):
+        if gain not in ['low','medium','high']:
+            print("Gain must be; low, medium or high")
+            return False
+        FliSdk.FliCredTwo.SetConversionGain(self.context,gain)
+        return True
     def set_sensor_temperature_live_wait(self,t):
         #set pelletier target in deg. C
         self.set_sensor_temperature(t)

@@ -6,6 +6,7 @@ Created on Wed Jul 21 12:23:10 2021
 optional arguments are; 
     --no-bias      Will not bias the images
     --no-ccdt      Will not show the real-time temperature of the CCD
+    --check-version
 @author: Jonathan St-Antoine, jonathan@astro.umontreal.ca
 """
 def help():
@@ -27,29 +28,13 @@ from sys import argv
 if '--help' in argv:
     help()
     exit(0)    
-def check_connection():
-    from pycromanager import Bridge
-    from version import colored
-    try:
-        bridge = Bridge()
-        bridge.get_core()
-        
-        print("Camera (CRED)\t[%s]"%(colored('Connected')))
-        bridge.close()
-    except :
-        print("Camera (CRED)\t[%s]"%(colored('Not Connected',c='red')))
-        print('Exiting...')
-        exit(0)
-if '--test' in argv:
-    check_connection()
-    exit(0)     
-    
-#test connection    
-check_connection()
-
-
+if '--check-version' in argv:
+    import version
+    exit(0)
+gain = "high"#conversion gain.
 cfg = cfg_file()
 number_image = int(cfg['IMGNUM'])
+gain = str(cfg["GAIN"])
 target_temperature = float(cfg['DETTEMP'])
 timeout_trigger = int(cfg['TIMEOUT']) #timeout before capture
 nd_filter = float(cfg['NDF'])#ND filter value
@@ -61,6 +46,8 @@ exp_time = 35#Starting exposure time in ms. The exposure time will be asked evey
 img2csv_path = ''
 with cred2() as cred:
     #set some variables
+    #set conversion gain
+    
     operator = input("Name of the person using this script?\n\t")
     for i in range(3):
         wavelength = input("Wavelength of the laser?\n\t")
@@ -88,7 +75,10 @@ with cred2() as cred:
     old_exp = exp_time
     
     if '--no-ccdt' not in argv:
+        cred.set_sensor_temperature_live_wait(target_temperature)
+    else:
         cred.set_sensor_temperature(target_temperature)
+    cred.set_gain(gain)
     if '--no-bias' not in argv:
         cred.bias()
     
