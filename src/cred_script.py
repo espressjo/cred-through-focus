@@ -46,7 +46,7 @@ exp_time = 35#Starting exposure time in ms. The exposure time will be asked evey
 img2csv_path = ''
 with cred2() as cred:
     #set some variables
-    #set conversion gain
+    
     
     operator = input("Name of the person using this script?\n\t")
     for i in range(3):
@@ -78,6 +78,7 @@ with cred2() as cred:
         cred.set_sensor_temperature_live_wait(target_temperature)
     else:
         cred.set_sensor_temperature(target_temperature)
+    #set conversion gain
     cred.set_gain(gain)
     if '--no-bias' not in argv:
         cred.bias()

@@ -5,8 +5,7 @@ Created on Fri Nov  5 11:49:45 2021
 
 @author: noboru
 """
-#TODO implement Gain function
-#TODO in version.py, make sure we have seaborn as well for live graph
+
 from time import sleep
 from os.path import join
 from astropy.io import fits
