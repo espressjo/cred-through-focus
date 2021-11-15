@@ -15,7 +15,8 @@ req_version = {
     'matplotlib':'3.3.4',
     're':'2.2.1',
     'scipy':'1.6.1',
-    'tqdm':'4.51.0'}
+    'tqdm':'4.51.0',
+    'seaborn': '0.11.1'}
 
 def colored(txt,c='green'):
     if c=='red':
@@ -31,6 +32,12 @@ try:
 except:
     del req_version['natsort']
     print("%s:\tNot installed\t[%s]"%('natsort',colored('NOK',c='red')))
+try:
+    import seaborn
+    module['seaborn'] = seaborn
+except:
+    del req_version['seaborn']
+    print("%s:\tNot installed\t[%s]"%('seaborn',colored('NOK',c='red')))
 try:
     import astropy
     module['astropy'] = astropy
