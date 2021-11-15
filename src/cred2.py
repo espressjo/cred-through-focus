@@ -25,7 +25,7 @@ class cred2():
     def __init__(self):
         self.cameraModel = ""
         self.context = FliSdk.Init()
-        self.detectCameras()
+        self.cam_detected = self.detectCameras()
         self.status = ""
         self.diag = ""
         self.fps = 0.0
@@ -213,9 +213,9 @@ class cred2():
         FliSdk.DetectGrabbers(self.context)
         listOfCameras = FliSdk.DetectCameras(self.context)
         
-        if len(listOfCameras) == 0:
+        if len(listOfCameras) == 0 or listOfCameras[0]=='Undefined':
             print("No camera detected. Exiting")
-            exit(0)
+            return False
 
         FliSdk.SetCamera(self.context, listOfCameras[0])
         FliSdk.Update(self.context)
@@ -224,6 +224,7 @@ class cred2():
         res,self.status,self.diag = FliSdk.FliCred.GetStatusDetailed(self.context)
 
         res,self.fps = FliSdk.FliSerialCamera.GetFps(self.context)
+        return True
         #    self.ReadParameters()
         #    self.timer.start(10)
     def disconnect(self):
@@ -392,3 +393,13 @@ class cred2():
             hdu.header['COMMENT'] = user_cmt.strip()
         #'C:/Users/Hexagon/Desktop/test.fits'
         hdu.writeto(fname,overwrite=overwrite)
+if '__main__' in __name__:
+    from sys import argv
+    if '--test' in argv:
+        cred = cred2()
+        if cred.cam_detected:
+            print("%s detected"%cred.cameraModel)
+            cred.disconnect()
+        else:
+            print("No camera found.")
+    
