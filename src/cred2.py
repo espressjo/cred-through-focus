@@ -9,7 +9,7 @@ Created on Fri Nov  5 11:49:45 2021
 from time import sleep
 from os.path import join
 from astropy.io import fits
-from os import system
+from os import system,getcwd
 from datetime import datetime
 from astropy.time import Time
 
@@ -38,7 +38,7 @@ class cred2():
         self.operator = ''
         self.fmt = "%Y-%m-%dT%H:%M:%S"
         #will change
-        self.WDIR = 'C:/Users/NIRPS/Documents/CRED-DATA'
+        self.WDIR = getcwd()
     def set_comments(self,comments):
         self.comments.append(comments)
     def set_wavelenght(self,w):

@@ -73,8 +73,10 @@ with cred2() as cred:
         except :
             print("Power must be float or int value.")
     programme = input("Name of the program?\n\t")
-    
-    cred.WDIR = join(cred.WDIR,datetime.now().strftime("%Y%m%d%H%M%S%f")[:-3])
+    if 'WDIR' in cfg and isdir(cfg['WDIR']):
+        cred.WDIR = join(cfg['WDIR'],datetime.now().strftime("%Y%m%d%H%M%S%f")[:-3])
+    else:
+        cred.WDIR = join(cred.WDIR,datetime.now().strftime("%Y%m%d%H%M%S%f")[:-3])
     img2csv_path = cred.WDIR
     if not isdir(cred.WDIR):
         mkdir(cred.WDIR)
