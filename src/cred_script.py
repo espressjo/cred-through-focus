@@ -13,7 +13,8 @@ def help():
     print('\n\t::: cred_script.py help menu :::')
     print('\t--no-bias      Will not bias the images')
     print('\t--no-ccdt      Will not show the real-time temperature of the CCD')
-    print('\t--test         Will test connection to the CRED.')
+    print('\t--check-version         Will test connection to the CRED.')
+    print('\t--test-cam\t will test the camera connection')
 from cred2 import cred2
 from os.path import join,isdir
 from datetime import datetime
@@ -30,6 +31,13 @@ if '--help' in argv:
     exit(0)    
 if '--check-version' in argv:
     import version
+    exit(0)
+if '--test-cam' in argv:
+    with cred2() as cred:
+        if cred.cam_detected:
+            print("%s detected"%cred.cameraModel)
+        else:
+            print("Not detected")
     exit(0)
 gain = "high"#conversion gain.
 cfg = cfg_file()
