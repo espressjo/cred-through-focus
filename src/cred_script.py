@@ -15,6 +15,7 @@ def help():
     print('\t--no-ccdt      Will not show the real-time temperature of the CCD')
     print('\t--check-version         Will test connection to the CRED.')
     print('\t--test-cam\t will test the camera connection')
+    print("\t--shutdown\tWill shutdown the Camera.")
 from cred2 import cred2
 from os.path import join,isdir
 from datetime import datetime
@@ -39,6 +40,11 @@ if '--test-cam' in argv:
         else:
             print("Not detected")
     exit(0)
+if '--shutdown' in argv:
+    with cred2() as cred:
+        cred.shutdown()
+        print("Camera is now shutdown. You need to perform a power cycle to reuse the CRED2 again.")
+        exit(0)
 gain = "high"#conversion gain.
 cfg = cfg_file()
 number_image = int(cfg['IMGNUM'])
