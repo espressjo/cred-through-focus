@@ -14,7 +14,7 @@ class cfg_file():
     def __init__(self):
         root_path = getcwd()
         self.cfg = {}
-        self.dict = ['IMGNUM','DETTEMP','TIMEOUT','NDF','GAIN']
+        self.dict = ['IMGNUM','DETTEMP','TIMEOUT','NDF','GAIN','WDIR']
         if 'src' in root_path:
             root_path = root_path.replace('src','')
         self.set_default()
@@ -25,18 +25,17 @@ class cfg_file():
                       self.extract_info(f)
     def __getitem__(self,key):
         return self.cfg[key]
+    def __contains__(self,key):
+        return key in self.dict
     def extract(self,line):
         new_line = ""
         for c in line:
             if c=="#":
                 break
-
             new_line+=c
         
         new_line=new_line.replace('\t',' ')
-        
         new_line = re.sub(' +', ' ', new_line)
-        
         kw = new_line.split(' ')[0]
         
         arg = new_line.replace(kw,'').strip()
