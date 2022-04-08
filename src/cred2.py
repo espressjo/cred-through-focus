@@ -12,7 +12,7 @@ from astropy.io import fits
 from os import system,getcwd
 from datetime import datetime
 from astropy.time import Time
-
+from numpy import asarray
 #required for the SDK
 import sys
 sys.path.append('../sdk/lib')
@@ -334,7 +334,7 @@ class cred2():
         status,defi = self.get_status()
         hdu = fits.PrimaryHDU(data=data)
         for i,j,k in zip(status.keys(),status.values(),defi.values()):
-            hdu[0].header[i] = (j,k)        
+            hdu.header[i] = (j,k)        
         hdu.writeto(join(self.WDIR,'tmp.fits'),overwrite=True)
         system("C:\SAOImageDS9\ds9.exe -zscale %s"%join(self.WDIR,'tmp.fits'))
     def single_capture(self):
@@ -359,7 +359,7 @@ class cred2():
                 break
             i+=1
         FliSdk.Stop(self.context)
-        return FliSdk.GetRawImageAsNumpyArray(self.context,-1)
+        return asarray(FliSdk.GetRawImageAsNumpyArray(self.context,-1),dtype=float)
     def __enter__(self):
         return self
     def __exit__(self, exc_type, exc_val, exc_tb):

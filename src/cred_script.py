@@ -45,7 +45,7 @@ if '--shutdown' in argv:
         cred.shutdown()
         print("Camera is now shutdown. You need to perform a power cycle to reuse the CRED2 again.")
         exit(0)
-gain = "high"#conversion gain.
+gain = "medium"#conversion gain.
 cfg = cfg_file()
 number_image = int(cfg['IMGNUM'])
 gain = str(cfg["GAIN"])
