@@ -96,8 +96,9 @@ with cred2() as cred:
         cred.set_sensor_temperature(target_temperature)
     #set conversion gain
     cred.set_gain(gain)
-    if '--no-bias' not in argv:
-        cred.bias()
+    cred.disable_bias()
+    #if '--no-bias' not in argv:
+        #cred.bias()
     
     #::::::::::::::::::::::::::::::::::::::::::
     #::  Set some variable for the headers   ::
@@ -112,12 +113,17 @@ with cred2() as cred:
         cred.set_comments(cmt)
     ii=0
     analyse = True
-    print("From this point you can type in a command;\n\tanalyse\tWill start the analysis\n\tabort\tWill close this script without analysing the data\n\tcomment\tWill let a user enter a comment in the FITS header.")
+    print("From this point you can type in a command;\n\tanalyse\tWill start the analysis\n\tabort\ndark\n\tWill close this script without analysing the data\n\tcomment\tWill let a user enter a comment in the FITS header.")
     while(1):
         print("Position number #%d"%(ii+1))
         ii+=1
         tmp_cmt = ""
         usr = input("Move the focuser to a position. Press any key to continue. or [analyse,abort,comment]")
+        if 'dark' in usr:
+            for i in range(number_image):
+                print("Image %d/%d"%(i+1,number_image))
+                fname = datetime.now().strftime('dark_%Y%m%d%H%M%S%f')[:-3]
+                cred.acquire_single_image("%s.fits"%fname)
         if 'analyse' in usr:
             analyse = True
             break
@@ -131,7 +137,7 @@ with cred2() as cred:
         exp = float(input("Exposure time (ms)? "))
         if exp!=old_exp:
             cred.set_exp_time(exp)
-            cred.bias()
+            #cred.bias()
             old_exp = exp
         for i in range(timeout_trigger):
             print("%d/%d"%(i+1,timeout_trigger))
