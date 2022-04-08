@@ -118,8 +118,12 @@ with cred2() as cred:
         print("Position number #%d"%(ii+1))
         ii+=1
         tmp_cmt = ""
-        usr = input("Move the focuser to a position. Press any key to continue. or [analyse,abort,comment]")
+        usr = input("Move the focuser to a position. Press any key to continue. or [analyse,abort,comment,dark]")
         if 'dark' in usr:
+            exp = float(input("Exposure time (ms)? "))
+            if exp!=old_exp:
+                cred.set_exp_time(exp)
+                old_exp = exp
             for i in range(number_image):
                 print("Image %d/%d"%(i+1,number_image))
                 fname = datetime.now().strftime('dark_%Y%m%d%H%M%S%f')[:-3]
