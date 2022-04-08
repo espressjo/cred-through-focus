@@ -32,7 +32,7 @@ class analyse():
         # width of the comparison LSF in km/s
         self.width_comparison = 3.0 # km/s
         self.out_csv_file = 'table_defocus.csv'
-        self.rawfiles = [join(self.wdir,f) for f in listdir(wdir) if 'fits' in f]# raw files, will be processed and dumped in the 'cleaned' directory
+        self.rawfiles = [join(self.wdir,f) for f in listdir(wdir) if all(['fits' in f,'dark' not in f])]# raw files, will be processed and dumped in the 'cleaned' directory
         if isdir(join(self.wdir,'clean')):
             self.cleaned_file = [f for f in listdir(join(self.wdir,'clean'))]
         else:
